@@ -205,7 +205,8 @@ class CrawlerService:
                         self.visited_urls.add(href)
                         await self.queue.put((href, next_depth))
                         count_added += 1
-                except Exception:
+                except Exception as e:
+                    logger.error(f"Error extracting links: {e}")
                     continue
 
             if count_added > 0:

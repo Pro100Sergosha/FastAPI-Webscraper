@@ -1,9 +1,17 @@
+import os
 import uuid
 
+import aiofiles
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 
 from app.api.deps import get_crawler_service, get_job_store
-from app.models.models import StatusResponse, TriggerRequest, TriggerResponse
+from app.core.config import settings
+from app.models.models import (
+    LogResponse,
+    StatusResponse,
+    TriggerRequest,
+    TriggerResponse,
+)
 from app.services.crawler import CrawlerService
 from app.services.job_store import JobStore
 
@@ -52,32 +60,24 @@ async def get_scraper_status(
 
 @router.get("/scraper/logs", response_model=LogResponse)
 async def get_logs(limit: int = 50):
-    """
-    Возвращает последние записи из лог-файла.
-    :param limit: Количество возвращаемых строк (по умолчанию 50)
-    """
     log_path = settings.LOG_FILE
 
-    # 1. Проверяем, существует ли файл
     if not os.path.exists(log_path):
-        return LogResponse(logs=["Log file not found yet."], count=1, limit=limit)
+        return LogResponse(
+            logs=["Log file not found yet."],
+        )
 
     try:
-        # 2. Асинхронно читаем файл
         async with aiofiles.open(
             log_path, mode="r", encoding="utf-8", errors="ignore"
         ) as f:
-            # Читаем все строки (так как у нас ротация по 10МБ, это безопасно для памяти)
             lines = await f.readlines()
 
-            # 3. Берем последние N строк
             last_lines = lines[-limit:]
 
-            # Убираем лишние пробелы и символы переноса строки
             cleaned_logs = [line.strip() for line in last_lines if line.strip()]
 
-            return LogResponse(logs=cleaned_logs, count=len(cleaned_logs), limit=limit)
+            return LogResponse(logs=cleaned_logs)
 
     except Exception as e:
-        # В случае ошибки чтения возвращаем её как лог
-        return LogResponse(logs=[f"Error reading logs: {str(e)}"], count=1, limit=limit)
+        return LogResponse(logs=[f"Error reading logs: {str(e)}"])
