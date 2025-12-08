@@ -1,33 +1,31 @@
+import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
+logger = logging.getLogger(__name__)
 
 
-# --- Parsing Interface ---
-# [cite_start]See page 4 of PDF [cite: 79-87]
-class BaseParserService(ABC):
-
-    @abstractmethod
-    async def parse(self, html: str) -> Dict[str, Any]:
-        """Parse HTML and extract content"""
-        pass
-
-    @abstractmethod
-    async def clean(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Clean extracted data"""
-        pass
-
-
-# --- Storage Interface ---
 class BaseStorageBackend(ABC):
+    """Interface for storage backend"""
 
     @abstractmethod
-    async def save(
-        self, key: str, content: str, metadata: Dict[str, Any] = None
-    ) -> None:
-        """Save content with metadata"""
+    async def save(self, filename: str, content: str) -> None:
+        """Save content to storage"""
         pass
 
     @abstractmethod
     async def retrieve(self, key: str) -> Optional[str]:
         """Retrieve content by key"""
+        pass
+
+
+class BaseParserService(ABC):
+    """Interface for parsing (HTML -> Markdown)"""
+
+    @abstractmethod
+    async def parse(self, html: str) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def clean(self, data: Dict[str, Any]) -> Dict[str, Any]:
         pass

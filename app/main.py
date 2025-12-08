@@ -1,22 +1,28 @@
+# app/main.py
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
+
+from app.api.routes import router as api_router
 from app.core.config import settings
 from app.core.logging import setup_logging
-import logging
+from app.core.scheduler import setup_scheduler, shutdown_scheduler
 
-# Setup logging on startup
 setup_logging()
-logger = logging.getLogger(__name__)
-
-app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
 
 
-@app.get("/")
-async def root():
-    logger.info("Root endpoint accessed")
-    return {
-        "message": "Scraper API is running",
-        "config": {
-            "target": settings.TARGET_URL,
-            "mode": "Debug" if settings.DEBUG else "Production",
-        },
-    }
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    setup_scheduler()
+    yield
+    shutdown_scheduler()
+
+
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    lifespan=lifespan,
+)
+
+
+app.include_router(api_router, prefix="/api/v1")
