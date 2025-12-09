@@ -96,13 +96,13 @@ class CrawlerService:
             logger.info(f"=== Parsed {self.processed_links} links in {total_time} ===")
 
         except Exception as e:
-            logger.error(f"Error within main loop: {e}")
+            logger.exception(f"Error within main loop: {e}")
 
         finally:
             try:
                 self.browser.stop()
             except Exception as e:
-                logger.error(f"Failed stopping browser: {e}")
+                logger.exception(f"Failed stopping browser: {e}")
 
     async def _worker(self, task_id: str):
         while True:
@@ -114,7 +114,7 @@ class CrawlerService:
             try:
                 await self._process_url(url, depth, task_id)
             except Exception as e:
-                logger.error(f"Worker error: {e}")
+                logger.exception(f"Worker error: {e}")
             finally:
                 self.queue.task_done()
 
@@ -175,7 +175,7 @@ class CrawlerService:
                 return
 
             except Exception as e:
-                logger.error(f"Error processing {url}: {e}")
+                logger.exception(f"Error processing {url}: {e}")
                 if attempt < self.MAX_RETRIES:
                     await asyncio.sleep(1)
             finally:
@@ -183,7 +183,7 @@ class CrawlerService:
                     try:
                         await tab.close()
                     except Exception as e:
-                        logger.error(f"Error occurred with closing the tab: {e}")
+                        logger.exception(f"Error occurred with closing the tab: {e}")
 
     async def _extract_and_enqueue_links(self, tab, next_depth):
         try:
@@ -206,7 +206,7 @@ class CrawlerService:
                         await self.queue.put((href, next_depth))
                         count_added += 1
                 except Exception as e:
-                    logger.error(f"Error extracting links: {e}")
+                    logger.exception(f"Error extracting links: {e}")
                     continue
 
             if count_added > 0:
@@ -215,7 +215,7 @@ class CrawlerService:
                 )
 
         except Exception as e:
-            logger.error(f"Error extracting links: {e}")
+            logger.exception(f"Error extracting links: {e}")
 
     async def _wait_for_page_load(self, tab):
         try:
@@ -232,5 +232,5 @@ class CrawlerService:
                 attempts += 1
             return html
         except Exception as e:
-            logger.error(f"Error load check: {e}")
+            logger.exception(f"Error load check: {e}")
             return None

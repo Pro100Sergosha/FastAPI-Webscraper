@@ -1,4 +1,4 @@
-# app/main.py
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -9,13 +9,16 @@ from app.core.logging import setup_logging
 from app.core.scheduler import setup_scheduler, shutdown_scheduler
 
 setup_logging()
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("Application starting up..")
     setup_scheduler()
     yield
     shutdown_scheduler()
+    logger.info("Application shutting down..")
 
 
 app = FastAPI(

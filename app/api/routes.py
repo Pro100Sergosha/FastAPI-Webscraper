@@ -1,26 +1,25 @@
+import logging
 import os
 import uuid
 
 import aiofiles
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 
 from app.api.deps import get_crawler_service, get_job_store
 from app.core.config import settings
-from app.models.models import (
-    LogResponse,
-    StatusResponse,
-    TriggerRequest,
-    TriggerResponse,
-)
+from app.models.models import (LogResponse, StatusResponse, TriggerRequest,
+                               TriggerResponse)
 from app.services.crawler import CrawlerService
 from app.services.job_store import JobStore
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
 @router.post("/scraper/trigger", response_model=TriggerResponse)
 async def trigger_scraper(
     request: TriggerRequest,
+    req_info: Request,
     background_tasks: BackgroundTasks,
     crawler: CrawlerService = Depends(get_crawler_service),
     job_store: JobStore = Depends(get_job_store),
@@ -28,6 +27,10 @@ async def trigger_scraper(
     """
     Starts scraping task and instantly returns ID of the task.
     """
+    client_host = req_info.client.host
+    logger.info(
+        f"Manual trigger received from IP: {client_host} for URL: {request.url}"
+    )
     task_id = str(uuid.uuid4())
 
     await job_store.create_job(
