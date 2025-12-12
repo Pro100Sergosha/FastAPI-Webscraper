@@ -7,8 +7,12 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 
 from app.api.deps import get_crawler_service, get_job_store
 from app.core.config import settings
-from app.models.models import (LogResponse, StatusResponse, TriggerRequest,
-                               TriggerResponse)
+from app.models.models import (
+    LogResponse,
+    StatusResponse,
+    TriggerRequest,
+    TriggerResponse,
+)
 from app.services.crawler import CrawlerService
 from app.services.job_store import JobStore
 
