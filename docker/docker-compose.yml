@@ -1,0 +1,17 @@
+services:
+  webscraper:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: fastapi_webscraper
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../storage:/app/storage
+      - ../logs:/app/logs
+      - ../.env:/app/.env
+    env_file:
+      - ../.env
+    shm_size: '2gb'
+    restart: unless-stopped
+    init: true
