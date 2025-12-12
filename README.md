@@ -103,7 +103,7 @@ Starts a task to collect data for the specified URL.
 
 ```json
 {
-  "url": "[https://fastapi.tiangolo.com/](https://fastapi.tiangolo.com/)"
+  "url": "[https://fastapi.tiangolo.com/]"
 }
 ```
 
@@ -127,7 +127,7 @@ Retrieves information about the current progress of a task.
 {
   "task_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
   "status": "running",
-  "url": "[https://fastapi.tiangolo.com/](https://fastapi.tiangolo.com/)",
+  "url": "[https://fastapi.tiangolo.com/]",
   "processed_links": 15,
   "total_links_found": 42,
   "created_at": "2023-10-27T10:00:00",
@@ -195,3 +195,4 @@ This project is architected to support future integration with **RAG (Retrieval-
 * **Advanced Document Processing**: Support for pluggable processors to handle complex chunking strategies (configurable size and overlap).
 * **Embedding Hooks**: Extensible points for generating vector embeddings directly from the processed Markdown content.
 * **Metadata Enrichment**: Schema designed to support additional metadata (timestamps, source tags, content classification) for better retrieval accuracy.
+
