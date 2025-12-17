@@ -2,7 +2,7 @@ import asyncio
 import logging
 import time
 from datetime import datetime, timedelta
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin  # <--- ### FIX: Добавлен urljoin
 
 import nodriver as uc
 
@@ -170,7 +170,9 @@ class CrawlerService:
                     },
                 )
                 if depth < self.MAX_DEPTH:
-                    await self._extract_and_enqueue_links(tab, depth + 1)
+                    await self._extract_and_enqueue_links(
+                        tab, depth + 1, current_url=url
+                    )
 
                 return
 
@@ -185,25 +187,45 @@ class CrawlerService:
                     except Exception as e:
                         logger.exception(f"Error occurred with closing the tab: {e}")
 
-    async def _extract_and_enqueue_links(self, tab, next_depth):
+    async def _extract_and_enqueue_links(self, tab, next_depth, current_url: str):
         try:
             links_elements = await tab.select_all("a")
             count_added = 0
 
             for link in links_elements:
                 try:
-                    href = link.attrs.get("href")
+                    raw_href = link.attrs.get("href")
+
+                    if not raw_href:
+                        continue
+
+                    raw_href = raw_href.split("#")[0]
+                    if not raw_href:
+                        continue
+
+                    full_url = urljoin(current_url, raw_href)
+
+                    parsed_href = urlparse(full_url)
 
                     if (
-                        href
-                        and self.base_domain in href
-                        and href not in self.visited_urls
-                        and not href.endswith(
-                            (".png", ".jpg", ".jpeg", ".pdf", ".css", ".js", ".zip")
+                        parsed_href.netloc == self.base_domain
+                        and full_url not in self.visited_urls
+                        and not full_url.endswith(
+                            (
+                                ".png",
+                                ".jpg",
+                                ".jpeg",
+                                ".pdf",
+                                ".css",
+                                ".js",
+                                ".zip",
+                                ".ico",
+                                ".xml",
+                            )
                         )
                     ):
-                        self.visited_urls.add(href)
-                        await self.queue.put((href, next_depth))
+                        self.visited_urls.add(full_url)
+                        await self.queue.put((full_url, next_depth))
                         count_added += 1
                 except Exception as e:
                     logger.exception(f"Error extracting links: {e}")
