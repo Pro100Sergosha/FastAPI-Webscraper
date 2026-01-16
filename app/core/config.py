@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     LOG_FILE: str = "./logs/scraper.log"
 
+    DB_NAME: str = "database"
+    DB_URL: str = f"sqlite:///{DB_NAME}.db"
+
     model_config = SettingsConfigDict(
         env_file=".env", env_ignore_empty=True, extra="ignore"
     )

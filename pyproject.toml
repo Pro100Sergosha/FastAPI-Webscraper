@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "aiofiles>=25.1.0",
+    "alembic>=1.18.1",
     "apscheduler>=3.11.1",
     "beautifulsoup4>=4.14.3",
     "black>=25.11.0",
@@ -16,6 +17,7 @@ dependencies = [
     "pydantic-settings>=2.12.0",
     "pytest>=9.0.1",
     "setuptools>=80.9.0",
+    "sqlmodel>=0.0.31",
     "types-aiofiles>=25.1.0.20251011",
     "uvicorn>=0.38.0",
 ]
