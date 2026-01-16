@@ -2,7 +2,7 @@ import asyncio
 import logging
 import time
 from datetime import datetime, timedelta
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urljoin, urlparse
 
 import nodriver as uc
 
