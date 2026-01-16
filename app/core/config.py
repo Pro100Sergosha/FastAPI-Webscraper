@@ -16,6 +16,7 @@ class Settings(BaseSettings):
 
     HTML_STORAGE_PATH: str = "./storage/html"
     MARKDOWN_STORAGE_PATH: str = "./storage/markdown"
+    TASKS_STORAGE_PATH: str = "./storage/tasks"
 
     LOG_LEVEL: str = "INFO"
     LOG_FILE: str = "./logs/scraper.log"
