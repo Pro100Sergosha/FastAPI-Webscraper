@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
-from app.api.deps import get_crawler_service, get_job_store
+from app.api.dependencies import get_crawler_service, get_job_store
 from app.runner.asgi import app
 from app.services.job_store import JobStore
 
