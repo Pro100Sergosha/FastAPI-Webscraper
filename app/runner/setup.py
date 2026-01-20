@@ -45,5 +45,5 @@ def setup() -> FastAPI:
         version=settings.APP_VERSION,
         lifespan=lifespan,
     )
-    app.include_router(scraper.router)
+    app.include_router(scraper.router, prefix="/api/v1")
     return app

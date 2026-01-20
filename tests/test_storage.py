@@ -1,7 +1,9 @@
 import os
+
 import pytest
-from app.services.storage import FileSystemStorage
+
 from app.services.job_store import JobStore
+from app.services.storage import FileSystemStorage
 
 
 @pytest.mark.asyncio
