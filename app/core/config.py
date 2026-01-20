@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     LOG_FILE: str = "./logs/scraper.log"
 
+    GOOGLE_API_KEY: str
     DB_NAME: str = "database"
     DB_URL: str = f"sqlite:///{DB_NAME}.db"
 
