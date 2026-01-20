@@ -6,6 +6,8 @@ services:
     container_name: fastapi_webscraper
     ports:
       - "8000:8000"
+    depends_on:
+      - db
     volumes:
       - ../storage:/app/storage
       - ../logs:/app/logs
@@ -15,3 +17,16 @@ services:
     shm_size: '2gb'
     restart: unless-stopped
     init: true
+
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    restart: always
+    env_file:
+      - ../.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+volumes:
+  postgres_data:
