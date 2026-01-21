@@ -28,4 +28,4 @@ ENTRYPOINT ["entrypoint.sh"]
 
 EXPOSE 8000
 
-CMD ["xvfb-run", "--auto-servernum", "uv", "run", "uvicorn", "app.runner.asgi:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["xvfb-run", "--auto-servernum", "uv", "run", "uvicorn", "app.runner.asgi:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
