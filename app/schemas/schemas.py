@@ -5,6 +5,8 @@ from pydantic import BaseModel
 
 class TriggerRequest(BaseModel):
     url: str
+    max_depth: int
+    max_workers: int
 
 
 class TriggerResponse(BaseModel):

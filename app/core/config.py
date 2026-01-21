@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     TIMEZONE: str = "GMT"
 
     TARGET_URL: str
-    MAX_CRAWL_DEPTH: int = 3
+    MAX_DEPTH: int = 3
     MAX_WORKERS: int = 5
     RETRY_ATTEMPTS: int = 3
 

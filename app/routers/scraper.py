@@ -7,12 +7,8 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 
 from app.api.dependencies import get_crawler_service, get_job_store
 from app.core.config import settings
-from app.schemas.schemas import (
-    LogResponse,
-    StatusResponse,
-    TriggerRequest,
-    TriggerResponse,
-)
+from app.schemas.schemas import (LogResponse, StatusResponse, TriggerRequest,
+                                 TriggerResponse)
 from app.services.crawler import CrawlerService
 from app.services.job_store import JobStore
 
@@ -47,7 +43,13 @@ async def trigger_scraper(
             "total_links_found": 0,
         },
     )
-    background_tasks.add_task(crawler.start, request.url, task_id)
+    background_tasks.add_task(
+        crawler.start,
+        task_id,
+        request.url,
+        request.max_depth,
+        request.max_workers,
+    )
 
     return TriggerResponse(task_id=task_id, status="queued")
 

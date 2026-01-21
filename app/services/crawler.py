@@ -6,7 +6,6 @@ from urllib.parse import urljoin, urlparse
 
 import nodriver as uc
 
-from app.core.config import settings
 from app.services.base import BaseParserService, BaseStorageBackend
 from app.services.job_store import JobStore
 from app.services.storage import FileSystemStorage
@@ -22,6 +21,8 @@ class CrawlerService:
         parser: BaseParserService,
         md_storage: BaseStorageBackend,
     ):
+        self._max_depth = None
+        self._max_workers = None
         self.storage = storage
         self.job_store = job_store
         self.md_storage = md_storage
@@ -35,8 +36,6 @@ class CrawlerService:
             "Checking your browser",
             "Just a moment",
         ]
-        self.MAX_WORKERS = settings.MAX_WORKERS
-        self.MAX_DEPTH = settings.MAX_CRAWL_DEPTH
         self.MAX_RETRIES = 3
 
         self.processed_links = 0
@@ -45,13 +44,22 @@ class CrawlerService:
         self.base_domain = ""
         self.queue = asyncio.Queue()
 
-    async def start(self, start_url: str, task_id: str, max_depth: int = 2):
+    async def start(
+        self,
+        task_id: str,
+        start_url: str,
+        max_depth: int = 2,
+        max_workers: int = 10,
+    ):
         """
         Crawler start.
         Crawler will download all HTML files depended on max depth.
         """
-        logger.info(f"=== Starting crawling: {task_id} | Max Depth: {max_depth} ===")
-
+        self._max_depth = max_depth
+        self._max_workers = max_workers
+        logger.info(
+            f"=== Starting crawling: {task_id} | Max Depth: {max_depth} | Workers: {max_workers} ==="
+        )
         await self.job_store.update_job(
             task_id,
             {
@@ -63,7 +71,6 @@ class CrawlerService:
         self.visited_urls = set()
         self.processed_links = 0
         self.start_time = time.time()
-        self.MAX_DEPTH = max_depth
         self.base_domain = urlparse(start_url).netloc
 
         self.browser = await uc.start(headless=False)
@@ -73,8 +80,7 @@ class CrawlerService:
             self.visited_urls.add(start_url)
 
             workers = [
-                asyncio.create_task(self._worker(task_id))
-                for _ in range(self.MAX_WORKERS)
+                asyncio.create_task(self._worker(task_id)) for _ in range(max_workers)
             ]
 
             await self.queue.join()
@@ -169,7 +175,7 @@ class CrawlerService:
                         "estimated_time_remaining": eta_str,
                     },
                 )
-                if depth < self.MAX_DEPTH:
+                if depth < self._max_depth:
                     await self._extract_and_enqueue_links(
                         tab, depth + 1, current_url=url
                     )

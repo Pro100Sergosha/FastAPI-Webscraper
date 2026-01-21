@@ -1,10 +1,10 @@
-import logging
 import uuid
 from datetime import datetime, timedelta, timezone
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
+import logging
 from app.core.config import settings
 from app.services.crawler import CrawlerService
 from app.services.job_store import JobStore
@@ -31,6 +31,7 @@ async def run_scheduled_scrape():
     )
 
     max_depth = settings.MAX_CRAWL_DEPTH
+    max_workers = settings.MAX_WORKERS
     target_url = settings.TARGET_URL
 
     est_minutes = 5 * max_depth
@@ -53,7 +54,7 @@ async def run_scheduled_scrape():
     )
 
     try:
-        await crawler.start(start_url=target_url, task_id=task_id, max_depth=max_depth)
+        await crawler.start(start_url=target_url, task_id=task_id, max_depth=max_depth, max_workers=max_workers)
         logger.info(f"Scheduled job {task_id} finished successfully.")
     except Exception as e:
         logger.error(f"Scheduled job {task_id} failed: {e}")
