@@ -1,13 +1,14 @@
-import os
-import pytest
 import asyncio
+import os
 from typing import Generator
-from fastapi.testclient import TestClient
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
-from app.main import app
+import pytest
+from fastapi.testclient import TestClient
+
+from app.api.dependencies import get_crawler_service, get_job_store
+from app.runner.asgi import app
 from app.services.job_store import JobStore
-from app.api.deps import get_crawler_service, get_job_store
 
 
 @pytest.fixture(scope="session")

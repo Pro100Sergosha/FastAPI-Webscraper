@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.core.scheduler import setup_scheduler, shutdown_scheduler
-from app.routers import scraper
+from app.routers import scraper, ai
 
 logger = logging.getLogger(__name__)
 
@@ -45,5 +45,6 @@ def setup() -> FastAPI:
         version=settings.APP_VERSION,
         lifespan=lifespan,
     )
-    app.include_router(scraper.router)
+    app.include_router(scraper.router, prefix="/api/v1")
+    app.include_router(ai.router, prefix="/api/v1")
     return app

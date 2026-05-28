@@ -208,3 +208,4 @@ __marimo__/
 html/
 markdown/
 tasks/
+*.db

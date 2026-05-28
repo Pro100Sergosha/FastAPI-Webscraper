@@ -1,8 +1,10 @@
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
+
 from app.services.crawler import CrawlerService
-from app.services.storage import FileSystemStorage
 from app.services.parser import HtmlToMarkdownParser
+from app.services.storage import FileSystemStorage
 
 
 class MockTab:

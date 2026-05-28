@@ -5,6 +5,8 @@ from pydantic import BaseModel
 
 class TriggerRequest(BaseModel):
     url: str
+    max_depth: int
+    max_workers: int
 
 
 class TriggerResponse(BaseModel):
@@ -31,3 +33,20 @@ class StatusResponse(BaseModel):
 
 class LogResponse(BaseModel):
     logs: list[str]
+
+
+class UserRequest(BaseModel):
+    """
+    Schema representing a user's request containing a message.
+    """
+
+    message: str
+
+
+class AnalyzeResponse(BaseModel):
+    """
+    Schema representing the response after analyzing a user's message.
+    """
+
+    status: str
+    response: str
